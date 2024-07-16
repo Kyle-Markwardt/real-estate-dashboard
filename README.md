@@ -18,3 +18,18 @@ To run this Streamlit app locally, you need Python installed on your machine. Yo
 1. Clone this repository:
    ```bash
    git clone https://github.com/Kyle-Markwardt/real-estate-dashboard.git
+
+2. Navigate to the repository folder:
+```bash
+cd real-estate-dashboard
+
+3. Install the required packages:
+``` bash
+pip install -r requirements.txt
+
+## Usage
+After installing the dependencies, run the Streamlit app with:
+```bash
+streamlit run app.py
+
+Navigate to http://localhost:8501 in your web browser to view the app.
