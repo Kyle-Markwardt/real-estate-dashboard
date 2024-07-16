@@ -13,10 +13,19 @@ def load_data():
 
 sfo_data = load_data()
 
+# Get unique neighborhoods for the dropdown
+neighborhoods = sfo_data['neighborhood'].unique()
+
 # Visualization Functions
 def housing_units_per_year():
     units_per_year = sfo_data.groupby('year').mean('housing_units')[['housing_units']]
     fig = px.bar(units_per_year, y='housing_units', title='Average Housing Units Per Year')
+    std_dev = units_per_year['housing_units'].std()
+    min_units = units_per_year['housing_units'].min() - std_dev
+    max_units = units_per_year['housing_units'].max() + std_dev
+    fig.update_layout(
+    yaxis=dict(range=[min_units, max_units])
+)
     return fig
 
 def average_gross_rent():
@@ -45,9 +54,12 @@ def top_most_expensive_neighborhoods():
 
 def most_expensive_neighborhoods_rent_sales(neighborhood):
     df_costs = sfo_data[sfo_data['neighborhood'] == neighborhood]
-    df_costs = df_costs[['sale_price_sqr_foot', 'gross_rent']].melt(var_name='Cost Type', value_name='Value')
+    df_costs.reset_index(inplace=True)
+    df_costs = df_costs[['year', 'sale_price_sqr_foot', 'gross_rent']].melt(id_vars='year', var_name='Cost Type', value_name='Value')
     fig = px.bar(df_costs, x='year', y='Value', color='Cost Type', barmode='group',
-                 title=f'Sale Price per Square Foot and Gross Rent in {neighborhood}')
+            title=f'Sale Price per Square Foot and Gross Rent in {neighborhood}')
+    
+    fig.update_layout(xaxis_title='Year', yaxis_title='Cost')
     return fig
 
 # Start Streamlit App
@@ -69,12 +81,12 @@ def main():
     elif analysis_type == "Average Sales Price":
         st.plotly_chart(average_sales_price())
     elif analysis_type == "Average Price by Neighborhood":
-        neighborhood = st.sidebar.text_input("Enter Neighborhood:", "North Beach")
+        neighborhood = st.sidebar.selectbox("Enter Neighborhood:", neighborhoods, index=neighborhoods.tolist().index("North Beach"))
         st.plotly_chart(average_price_by_neighborhood(neighborhood))
     elif analysis_type == "Top 10 Most Expensive Neighborhoods":
         st.plotly_chart(top_most_expensive_neighborhoods())
     elif analysis_type == "Most Expensive Neighborhoods Rent vs. Sales":
-        neighborhood = st.sidebar.text_input("Enter Neighborhood for Rent vs. Sales Comparison:", "Mission")
+        neighborhood = st.sidebar.selectbox("Enter Neighborhood for Rent vs. Sales Comparison:", neighborhoods, index=neighborhoods.tolist().index("North Beach"))
         st.plotly_chart(most_expensive_neighborhoods_rent_sales(neighborhood))
 
 if __name__ == "__main__":
