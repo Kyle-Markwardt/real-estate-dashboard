@@ -17,4 +17,4 @@ To run this Streamlit app locally, you need Python installed on your machine. Yo
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/yourusername/sf-housing-dashboard.git
+   git clone https://github.com/Kyle-Markwardt/real-estate-dashboard.git
